@@ -14,6 +14,8 @@
    [taoensso.sente.server-adapters.aleph :refer (get-sch-adapter)]
    [taoensso.sente.packers.transit :as sente-transit]
    [cheshire.core :as json]
+   [vizard.schema :refer [Vega]]
+   [schema.core :as s]
    [clojure.java.io :as io])
   (:gen-class))
 
@@ -74,7 +76,7 @@
         :body (json/generate-string @last-spec)})
   (POST "/vl-spec" req
         (debugf "POST /vl-spec got: %s" req)
-        (let [vl-spec (json/parse-string (slurp (:body req)))]
+        (let [vl-spec (json/parse-string (slurp (:body req)) true)]
           (reset! last-vl-spec vl-spec)
           (doseq [uid (:any @connected-uids)]
             (chsk-send! uid [:vizard/vl-spec vl-spec]))
